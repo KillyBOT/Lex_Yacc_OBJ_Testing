@@ -1,77 +1,115 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 %}
 
-%token VERTEX TCOORD NORMAL POLYGON NAME OBJECT_NAME SMOOTH_SHADING MTLLIB USEMTL 
-%token STRING DOUBLE LOCATION SLASH
+%union{
+	double value;
+	char string[512];
+}
+
+%token <string> VERTEX TCOORD NORMAL POLYGON NAME OBJECT_DECLARATION SMOOTH_SHADING MTLLIB USEMTL 
+%token <string> STRING SLASH
+%token <value> VALUE
 %token COMMENT
 
 %%
 
-comment: COMMENT
+input:
+| input command
+;
+
+command:
+
+MTLLIB str
 {
-	printf("This is a comment\n")
+	printf("This specifies the mtl file\n");
+}|
+
+OBJECT_DECLARATION str
+{
+	printf("This declares an object\n");
+}|
+
+VERTEX coords
+{
+	printf("This is a vertex definition\n");
+}|
+
+NORMAL coords
+{
+	printf("This is a normal definition\n");
+}|
+
+TCOORD coords
+{
+	printf("This is a texture coordinate definition\n");
+}|
+
+USEMTL str
+{
+	printf("This specifies the mtl file\n");
+}|
+
+SMOOTH_SHADING val
+{
+	printf("This specifies the smooth shading group\n");
+}|
+
+POLYGON rectangle
+{
+	printf("This is a rectangle polygon\n");
+}|
+
+POLYGON triangle
+{
+	printf("This is a triangle polygon\n");
+}|
+
+COMMENT
+{
+	printf("This is a comment\n");
 }
 ;
 
-string: STRING
+coords: val val val val
+|	val val val
+|	val val
+;
+
+rectangle: vtn vtn vtn vtn
+| vn vn vn vn
+| vt vt vt vt
+| val val val val
+;
+
+triangle: vtn vtn vtn
+| vn vn vn
+| vt vt vt
+| val val val
+;
+
+
+vt: val SLASH val
+;
+
+vn: val SLASH SLASH val
+;
+
+vtn: val SLASH val SLASH val
+;
+
+str: STRING
 {
-	printf("This is something I never looked at, I should fix that!\n");
+	printf("String value: [%s]\n",$1);
 }
 ;
 
-vertex: VERTEX coords
+val: VALUE
 {
-	printf("This is a vertex\n");
-}
-;
-
-normal: NORMAL coords
-{
-	printf("This is a normal\n");
-}
-;
-
-tcoord: TCOORD coords
-{
-	printf("This is a texture coordinate\n");
-}
-;
-
-triangle: POLYGON v v v
-| POLYGON vt vt vt
-| POLYGON vn vn vn
-| POLYGON vtn vtn vtn
-{
-	printf("This is a triangle polygon");
-}
-;
-
-rectangle: POLYGON v v v v
-| POLYGON vt vt vt vt
-| POLYGON vn vn vn vn
-| POLYGON vtn vtn vtn vtn
-{
-	printf("This is a rectangle polygon");
-}
-;
-
-coords: DOUBLE DOUBLE DOUBLE DOUBLE
-|	DOUBLE DOUBLE DOUBLE
-|	DOUBLE DOUBLE
-;
-
-v: LOCATION
-;
-
-vt: LOCATION SLASH LOCATION
-;
-
-vn: LOCATION SLASH SLASH LOCATION
-;
-
-vtn: LOCATION SLASH LOCATION SLASH LOCATION
-;
+	printf("Double or location value: [%.3lf]\n",$1);
+};
 
 %%
 
@@ -90,6 +128,6 @@ int main(int argc, char** argv){
 	yyin = fopen(argv[1],"r");
 
 	yyparse();
-
+	
 	return 0;
 }

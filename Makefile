@@ -1,19 +1,33 @@
-all: lex.yy.c y.tab.c y.tab.h
-	gcc -o Testing -g lex.yy.c y.tab.c
+obj: lex.obj.c obj.tab.c obj.tab.h
+	gcc -c obj.tab.c lex.obj.c
+	gcc -o objParser lex.obj.o obj.tab.o
+	./objParser bookshelf.obj
 
-lex.yy.c: obj.l y.tab.h
-	flex -I obj.l
+mtl: lex.mtl.c mtl.tab.c mtl.tab.h
+	gcc -c mtl.tab.c lex.mtl.c
+	gcc -o mtlParser lex.mtl.o mtl.tab.o
+	./mtlParser bookshelf.mtl
 
-y.tab.c: obj.y
+lex.obj.c: obj.l obj.tab.h
+	flex -o lex.obj.c obj.l
+
+lex.mtl.c: mtl.l mtl.tab.h
+	flex -o lex.mtl.c mtl.l
+
+obj.tab.c: obj.y
 	bison -d obj.y
 
-y.tab.h: obj.y
+obj.tab.h: obj.y
 	bison -d obj.y
+
+mtl.tab.c: mtl.y
+	bison -d mtl.y
+
+mtl.tab.h: mtl.y
+	bison -d mtl.y
 
 clean:
-	rm lex.yy.c
-	rm y.tab.c
-	rm y.tab.h
-
-run: all
-	./Testing bookshelf.obj
+	rm lex.*.c
+	rm mtl.tab.*
+	rm obj.tab.*
+	rm *.o

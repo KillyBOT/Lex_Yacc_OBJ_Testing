@@ -1,56 +1,74 @@
 %{
-
-/* The lex part */
-#include "y.tab.h"
+#include "obj.tab.h"
 %}
 
 %%
 
-[\t\n ]+ ;
+[ \t\n ]+ ;
 
-\\ {
-	printf("%s is a SLASH\n",yytext);
+\/ {
+	//printf("[%s] is a SLASH\n",yytext);
 	return SLASH;
 }
 
-^#.* {
-	printf("%s is a COMMENT\n",yytext);
+#.* {
+	//printf("[%s] is a COMMENT\n",yytext);
 	return COMMENT;
 }
 
+mtllib {
+	//printf("[%s] is an MTLLIB\n",yytext);
+	return MTLLIB;
+}
 
-^v {
-	printf("%s is a VERTEX\n",yytext);
+
+v {
+	//printf("[%s] is a VERTEX\n",yytext);
 	return VERTEX;
 }
 
-^vt {
-	printf("%s is a TCOORD\n",yytext);
+vt {
+	//printf("[%s] is a TCOORD\n",yytext);
 	return TCOORD;
 }
 
-^vn {
-	printf("%s is a NORMAL\n",yytext);
+vn {
+	//printf("[%s] is a NORMAL\n",yytext);
 	return NORMAL;
 }
 
-^f {
-	printf("%s is a POLYGON\n",yytext);
+f {
+	//printf("[%s] is a POLYGON\n",yytext);
 	return POLYGON;
 }
 
-[a-zA-Z]+ {
-	printf("%s is a STRING\n",yytext);
-	return STRING;
+o {
+	//printf("[%s] is an OBJECT_DECLARATION\n",yytext);
+	return OBJECT_DECLARATION;
 }
 
-[0-9]+\.[0-9]+ {
-	printf("%s is a DOUBLE\n",yytext);
-	return DOUBLE;
+s {
+	//printf("[%s] is a SMOOTH_SHADING\n",yytext);
+	return SMOOTH_SHADING;
 }
-[0-9]+ {
-	printf("%s is a LOCATION\n",yytext);
-	return LOCATION;
+
+usemtl {
+	//printf("[%s] is a USEMTL\n",yytext);
+	return USEMTL;
+}
+
+\-?[0-9]+\.[0-9]* |
+\-?[0-9]*\.[0-9]+ |
+\-?[0-9]+ {
+	//printf("[%s] is a VALUE\n",yytext);
+	yylval.value = atof(yytext);
+	return VALUE;
+}
+
+[a-zA-Z][\.a-zA-Z0-9_]* {
+	//printf("[%s] is a STRING\n",yytext);
+	strcpy(yylval.string, yytext);
+	return STRING;
 }
 
 .
