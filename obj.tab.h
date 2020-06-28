@@ -50,21 +50,31 @@ extern int yydebug;
     NORMAL = 260,
     POLYGON = 261,
     NAME = 262,
-    OBJECT_NAME = 263,
+    OBJECT_DECLARATION = 263,
     SMOOTH_SHADING = 264,
     MTLLIB = 265,
     USEMTL = 266,
     STRING = 267,
-    DOUBLE = 268,
-    LOCATION = 269,
-    SLASH = 270,
-    COMMENT = 271
+    SLASH = 268,
+    VALUE = 269,
+    COMMENT = 270
   };
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+
+union YYSTYPE
+{
+#line 7 "obj.y" /* yacc.c:1909  */
+
+	double value;
+	char string[512];
+
+#line 75 "obj.tab.h" /* yacc.c:1909  */
+};
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
